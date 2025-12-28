@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.39.26.7824",
+      "templateHash": "5085305929282611738"
+    }
+  },
+  "parameters": {
+    "policyName": {
+      "type": "string",
+      "defaultValue": "deny-public-app-service-access",
+      "metadata": {
+        "description": "Policy name"
+      }
+    },
+    "displayName": {
+      "type": "string",
+      "defaultValue": "Deny Public App Service Public Network Access",
+      "metadata": {
+        "description": "Policy display name"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/policyDefinitions",
+      "apiVersion": "2021-06-01",
+      "name": "[parameters('policyName')]",
+      "properties": {
+        "displayName": "[parameters('displayName')]",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Denies App Services that allow public network access",
+        "policyRule": {
+          "if": {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Web/sites"
+              },
+              {
+                "field": "Microsoft.Web/sites/publicNetworkAccess",
+                "equals": "Enabled"
+              }
+            ]
+          },
+          "then": {
+            "effect": "deny"
+          }
+        }
+      }
+    }
+  ]
+}
